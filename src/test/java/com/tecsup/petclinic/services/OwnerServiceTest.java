@@ -1,37 +1,28 @@
 package com.tecsup.petclinic.services;
 
-import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@Slf4j
-public class OwnerServiceTest {
+@Transactional
+class OwnerServiceTest {
+    @Autowired OwnerService ownerService;
 
-	//@Autowired
-   //	private OwnerService ownerService;
+    @Test
+    void createUpdateFindAndDeleteOwner() {
+        int id = ownerService.create("TestOwner", "Olanda", "123 Test St", "Lima", "999333444");
+        assertEquals("TestOwner", ownerService.findById(id).get("first_name"));
 
-	/**
-	 * 
-	 */
-	/*
-	@Test
-	public void testFindOwnerById() {
+        assertEquals(1, ownerService.update(id, "TestOwner", "Olanda", "123 Test St", "Arequipa", "999333444"));
+        assertEquals("Arequipa", ownerService.findById(id).get("city"));
 
-		long ID = 1;
-		String NAME = "Jaime";
-		Owner owner = null;
-		
-		try {
-			
-			owner = ownerService.findById(ID);
-			
-		} catch (OwnertNotFoundException e) {
-			fail(e.getMessage());
-		}
-		log.info("" + owner);
-
-		assertEquals(NAME, owner.getName());
-
-	}
-	*/
+        assertEquals(1, ownerService.delete(id));
+        assertThrows(DataAccessException.class, () -> ownerService.findById(id));
+    }
 }
